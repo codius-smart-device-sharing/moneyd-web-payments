@@ -19,9 +19,9 @@ export class WebPaymentRouter extends CustomRouter
         {
             try
             {
-                const plugin = createPlugin()
-                await plugin.connect()
-                const { assetCode } = await ILDCP.fetch(plugin.sendData.bind(this));
+                const plugin: any = createPlugin();
+                await plugin.connect();
+                const { assetCode } = await ILDCP.fetch(plugin.sendData.bind(plugin));
 
                 console.log(assetCode);
 
