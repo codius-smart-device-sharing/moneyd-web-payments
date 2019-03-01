@@ -21,12 +21,13 @@ export class WebPaymentRouter extends CustomRouter
             {
                 const plugin: any = createPlugin();
                 await plugin.connect();
-                const { assetCode } = await ILDCP.fetch(plugin.sendData.bind(plugin));
+                const { assetCode, assetScale } = await ILDCP.fetch(plugin.sendData.bind(plugin));
 
-                console.log(assetCode);
+                console.log(assetCode + ' ' + assetScale);
 
                 ctx.body = {
-                    asset: assetCode
+                    asset: assetCode,
+                    assetScale: assetScale
                 };
                 ctx.status = 200;
             }
