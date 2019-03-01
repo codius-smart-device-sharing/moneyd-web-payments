@@ -2,7 +2,7 @@
 import { CustomRouter } from "./CustomRouter";
 
 // Set up the ilp configs
-import { SPSP, createPlugin } from 'ilp/src';
+import { ILDCP, SPSP, createPlugin } from 'ilp/src';
 
 export class WebPaymentRouter extends CustomRouter
 {
@@ -15,6 +15,28 @@ export class WebPaymentRouter extends CustomRouter
     // Implement the route creating method
     protected CreateRoutes(): void
     {
+        this.router.get('/asset', async (ctx: any, next: Function): Promise<any> =>
+        {
+            try
+            {
+                const plugin = createPlugin()
+                await plugin.connect()
+                const { assetCode } = await ILDCP.fetch(plugin.sendData.bind(this));
+
+                console.log(assetCode);
+
+                ctx.body = {
+                    asset: assetCode
+                };
+                ctx.status = 200;
+            }
+            catch (error)
+            {
+                console.error(error);
+                ctx.status = 500;
+            }
+        });
+
         this.router.post('/actions/send', async (ctx: any, next: Function): Promise<any> =>
         {
             const { receiver, amount } = JSON.parse(ctx.request.body.body);
