@@ -23,7 +23,7 @@ export class WebPaymentRouter extends CustomRouter
                 await plugin.connect();
                 const { assetCode, assetScale } = await ILDCP.fetch(plugin.sendData.bind(plugin));
 
-                console.log(assetCode + ' ' + assetScale);
+                console.log('Code: ' + assetCode + ', Scale: ' + assetScale);
 
                 ctx.body = {
                     asset: assetCode,
@@ -59,12 +59,41 @@ export class WebPaymentRouter extends CustomRouter
                     message: error.message,
                     stack: error.stack
                 };
-                return
+                return;
             }
       
             ctx.body = {
                 success: true
             };
+        });
+
+        this.router.get('/actions/connect', async (ctx: any, next: Function): Promise<any> =>
+        {
+            // This is the route to try and create a connection to the ilp service worker -- this will try to connect the plugin
+            // and if it succeeds in establishing a connection to the local moneyd instance, then the ILP service worker should be
+            // retrieved from the distlib on this local port -- dont store in s3 (full app doesnt need to know about your Payment method)
+            try
+            {
+                const plugin: any = createPlugin();
+                await plugin.connect();
+
+                // This worked -- return success
+                ctx.body = {
+                    success: true
+                };
+                ctx.status = 200;
+            }
+            catch (error)
+            {
+                console.error(error);
+
+                ctx.body = {
+                    success: false
+                };
+
+                // label this as client error -- they should have moneyd running!
+                ctx.status = 400;
+            }
         });
     }
 }

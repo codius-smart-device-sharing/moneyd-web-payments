@@ -11,7 +11,7 @@ const PORT: number = 8081;
 
 export default class Server
 {
-    public app : Koa
+    public app: Koa
 
     public constructor()
     {
@@ -25,7 +25,7 @@ export default class Server
         this.Routes();
     }
 
-    public Configure()
+    public Configure(): void
     {
         // Add static paths -- needs to be updated for the different frontend methods
         this.app.use(bodyParser());
@@ -37,7 +37,7 @@ export default class Server
         this.app.listen(PORT);
     }
 
-    private Routes()
+    private Routes(): void
     {
         // Attach all the routers
         const combinedRouter = combineRouters(

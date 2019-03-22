@@ -44,15 +44,16 @@
     "koa-router": "^7.4.0",
     "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
-    "localtunnel": "^1.9.1"
+    "localtunnel": "^1.9.1",
+    "moneyd-uplink-xrp": "^1.3.4",
+    "moneyd": "^4.3.0"
   },
   "devDependencies": {
     "@types/jest-diff": "^20.0.0",
     "codius": "^3.1.0",
+    "expo-cli": "^2.11.7",
     "jest": "^24.1.0",
     "jest-diff": "^24.0.0",
-    "moneyd": "^4.3.0",
-    "moneyd-uplink-xrp": "^1.3.4",
     "nodemon": "^1.18.10",
     "supertest": "^3.4.2",
     "ts-jest": "^24.0.0",
