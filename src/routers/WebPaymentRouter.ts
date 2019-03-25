@@ -40,13 +40,14 @@ export class WebPaymentRouter extends CustomRouter
 
         this.router.post('/actions/send', async (ctx: any, next: Function): Promise<any> =>
         {
-            const { receiver, amount } = JSON.parse(ctx.request.body.body);
+            const { receiver, amount, orderHash } = JSON.parse(ctx.request.body.body);
       
             try 
             {
                 const result = await SPSP.pay(createPlugin(), {
                     receiver,
-                    sourceAmount: amount
+                    sourceAmount: amount,
+                    data: orderHash
                 });
       
                 console.log(result);
