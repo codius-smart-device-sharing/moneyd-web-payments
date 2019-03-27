@@ -19,19 +19,15 @@
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
-            "preLaunchTask": "npm: build",
+            "preLaunchTask": "npm: build-dev",
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
             "windows": {
               "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
             },
-            "outFiles": [
-                "${workspaceRoot}/distlib/src/server/index.js",
-            ],
             "runtimeArgs": [
-                "--remote-debugging-port=9223",
                 "./distlib/src/server/index.js"
             ],
-            "protocol": "inspector"
+            "outputCapture": "std"
           },
         {
             "type": "node",

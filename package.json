@@ -4,8 +4,9 @@
   "description": "Package to run the moneyd-web-payment sender and receiver",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && node ./distlib/src/index.js",
-    "electron": "npm run build && electron distlib/src/main.js",
+    "start": "npm run build-dev && node ./distlib/src/index.js",
+    "electron": "npm run build-dev && electron distlib/src/server/index.js",
+    "build-dev": "npm run copy && tsc -p ./ && webpack --config ./distlib/webpack.config.js --mode development",
     "build": "npm run copy && tsc -p ./",
     "copy": "copyfiles src/**/*.json distlib/",
     "test": "npm run build && jest --coverage --collectCoverageFrom=src/**/*.{ts,tsx}"
@@ -30,6 +31,10 @@
     "@types/koa-send": "^4.1.1",
     "@types/koa-static": "^4.0.1",
     "@types/koa__cors": "^2.2.3",
+    "@types/react": "^16.8.10",
+    "@types/react-dom": "^16.8.3",
+    "@types/react-redux": "^7.0.5",
+    "@types/redux-form": "^8.1.1",
     "axios": "^0.18.0",
     "chalk": "^2.4.2",
     "copyfiles": "^2.1.0",
@@ -44,7 +49,13 @@
     "koa-router": "^7.4.0",
     "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
-    "localtunnel": "^1.9.1"
+    "localtunnel": "^1.9.1",
+    "react": "^16.8.5",
+    "react-dom": "^16.8.5",
+    "react-redux": "^6.0.1",
+    "redux": "^4.0.1",
+    "redux-form": "^8.1.0",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@types/jest-diff": "^20.0.0",
@@ -56,6 +67,7 @@
     "nodemon": "^1.18.10",
     "supertest": "^3.4.2",
     "ts-jest": "^24.0.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "webpack-cli": "^3.3.0"
   }
 }
