@@ -1,26 +1,25 @@
 {
-  "name": "codius-bar-contract",
+  "name": "moneyd-web-payments",
   "version": "1.0.0",
-  "description": "Default smart contract for a shared smart bar",
+  "description": "Package to run the moneyd-web-payment sender and receiver",
   "main": "index.js",
   "scripts": {
     "start": "npm run build && node ./distlib/src/index.js",
-    "docker-debug": "npm run build && docker-compose build && docker-compose up",
-    "dockerize": "npm run build && docker build -t cbhubb8/codius-bar-contract .",
+    "electron": "npm run build && electron distlib/src/main.js",
     "build": "npm run copy && tsc -p ./",
     "copy": "copyfiles src/**/*.json distlib/",
     "test": "npm run build && jest --coverage --collectCoverageFrom=src/**/*.{ts,tsx}"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codius-smart-device-sharing/codius-bar-contract.git"
+    "url": "git+https://github.com/codius-smart-device-sharing/moneyd-web-payments.git"
   },
   "author": "ChristopherHubbard",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/codius-smart-device-sharing/codius-bar-contract/issues"
+    "url": "https://github.com/codius-smart-device-sharing/moneyd-web-payments/issues"
   },
-  "homepage": "https://github.com/codius-smart-device-sharing/codius-bar-contract#readme",
+  "homepage": "https://github.com/codius-smart-device-sharing/moneyd-web-payments#readme",
   "dependencies": {
     "@koa/cors": "^2.2.3",
     "@types/jest": "^24.0.3",
@@ -50,7 +49,8 @@
   "devDependencies": {
     "@types/jest-diff": "^20.0.0",
     "codius": "^3.1.0",
-    "expo-cli": "^2.11.7",
+    "electron": "^4.1.1",
+    "expo-cli": "^2.13.0",
     "jest": "^24.1.0",
     "jest-diff": "^24.0.0",
     "nodemon": "^1.18.10",
