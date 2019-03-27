@@ -3,6 +3,7 @@ import { CustomRouter } from "./CustomRouter";
 
 // Set up the ilp configs
 import { ILDCP, SPSP, createPlugin } from 'ilp/src';
+import { SPSPServer } from "../SPSPServer";
 
 export class WebPaymentRouter extends CustomRouter
 {
@@ -94,6 +95,28 @@ export class WebPaymentRouter extends CustomRouter
 
                 // label this as client error -- they should have moneyd running!
                 ctx.status = 400;
+            }
+        });
+
+        this.router.get('/receiver', async (ctx: any, next: Function): Promise<any> =>
+        {
+            try
+            {
+                const paymentPointer: string = SPSPServer.paymentPointer;
+                await SPSP.query(paymentPointer);
+
+                ctx.body = {
+                    paymentPointer: paymentPointer
+                };
+                ctx.status = 200;
+            }
+            catch (error)
+            {
+                console.error(error);
+                ctx.body = {
+                    error: error.toString()
+                };
+                ctx.status = 500;
             }
         });
     }
