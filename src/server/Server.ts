@@ -12,7 +12,8 @@ const PORT: number = 8081;
 
 export default class Server
 {
-    public app: Koa
+    public app: Koa;
+    private portConnection: any;
 
     public constructor()
     {
@@ -38,7 +39,19 @@ export default class Server
         await SPSPServer.run();
 
         // Listen on a port
-        this.app.listen(PORT);
+        this.Open();
+    }
+
+    public async Open(): Promise<void>
+    {
+        this.portConnection = this.app.listen(PORT);
+        await SPSPServer.run();
+    }
+
+    public Close(): void
+    {
+        this.portConnection.close();
+        SPSPServer.close();
     }
 
     private Routes(): void

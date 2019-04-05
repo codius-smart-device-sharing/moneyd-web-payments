@@ -11,6 +11,8 @@ import * as crypt from 'crypto';
 const name = crypt.randomBytes(8).toString('hex');
 const paymentPointer: string = '$' + name + '.localtunnel.me';
 
+let portConnection: any;
+
 const run = async (callback?: (data: string) => any) =>
 {  
     console.log('connecting...');
@@ -65,9 +67,7 @@ const run = async (callback?: (data: string) => any) =>
         }
     }
 
-    app
-        .use(handleSPSP)
-        .listen(port);
+    portConnection = app.use(handleSPSP).listen(port);
 
     console.log('listening on ' + port);
     localtunnel(port, { subdomain: name }, (err: any, tunnel: any) => 
@@ -83,7 +83,13 @@ const run = async (callback?: (data: string) => any) =>
     });
 }
 
+const close = () =>
+{
+    portConnection.close();
+}
+
 export const SPSPServer = {
     paymentPointer: paymentPointer,
-    run: run
+    run: run,
+    close: close
 };

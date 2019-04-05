@@ -5,6 +5,8 @@ import { reducer as form } from 'redux-form';
 import thunk from 'redux-thunk';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 
+import { App } from './components';
+
 // Combine the reducers into a top level reducer
 const rootReducer = combineReducers({
     form: form
@@ -16,7 +18,7 @@ const store = createStore(rootReducer, compose(applyMiddleware(thunk)));
 // Render the top level app component -- provide the store
 render(
     <Provider store={store}>
-        <div> Hello World! </div>
+        <App/>
     </Provider>,
     document.getElementById('app')
 );
