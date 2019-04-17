@@ -23,7 +23,10 @@ const createWindow = () =>
     });
 
     // Load index.html and start the server
-    server = new Server();
+    if (!server)
+    {
+        server = new Server();
+    }
     mainWindow.loadFile(path.join(__dirname, '../../../dist/index.html'));
 
     // Open the DevTools.

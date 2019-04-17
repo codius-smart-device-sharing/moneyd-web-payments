@@ -35,9 +35,6 @@ export default class Server
         // Add error handling
         this.app.on("error", console.error);
 
-        // Create the SPSP receiver -- does this need to be awaited?
-        await SPSPServer.run();
-
         // Listen on a port
         this.Open();
     }
