@@ -25,7 +25,7 @@
               "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
             },
             "runtimeArgs": [
-                "./distlib/src/server/index.js"
+                "./distlib/src/server/electron.js"
             ],
             "outputCapture": "std"
           },
