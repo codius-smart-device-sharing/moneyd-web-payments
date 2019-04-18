@@ -15,22 +15,28 @@
             "protocol": "inspector"
         },
         {
+            "name": "Debug Electron App",
             "type": "node",
-            "request": "attach",
-            "name": "Attach by Process ID",
-            "processId": "${command:PickProcess}",
-            "outFiles": [
-                "${workspaceFolder}/distlib/src/index.js"
-            ]
-        },
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "npm: build-dev",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "windows": {
+              "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+            },
+            "runtimeArgs": [
+                "./distlib/src/server/electron.js"
+            ],
+            "outputCapture": "std"
+          },
         {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/distlib/src/index.js",
+            "program": "${workspaceFolder}/distlib/src/server/index.js",
             "preLaunchTask": "npm: build",
             "outFiles": [
-                "${workspaceFolder}/distlib/src/index.js"
+                "${workspaceFolder}/distlib/src/server/index.js"
             ]
         }
     ]

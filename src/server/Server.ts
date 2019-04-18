@@ -2,6 +2,7 @@ import * as Koa from "koa";
 import * as combineRouters from "koa-combine-routers";
 import { WebPaymentRouter } from "./routers";
 import * as CORS from "@koa/cors";
+import { SPSPServer } from "./SPSPServer";
 
 let path: any = require("path");
 let bodyParser: any = require('koa-bodyparser');
@@ -11,7 +12,8 @@ const PORT: number = 8081;
 
 export default class Server
 {
-    public app: Koa
+    public app: Koa;
+    private portConnection: any;
 
     public constructor()
     {
@@ -25,7 +27,7 @@ export default class Server
         this.Routes();
     }
 
-    public Configure(): void
+    public async Configure(): Promise<void>
     {
         // Add static paths -- needs to be updated for the different frontend methods
         this.app.use(bodyParser());
@@ -34,7 +36,19 @@ export default class Server
         this.app.on("error", console.error);
 
         // Listen on a port
-        this.app.listen(PORT);
+        this.Open();
+    }
+
+    public async Open(): Promise<void>
+    {
+        this.portConnection = this.app.listen(PORT);
+        await SPSPServer.run();
+    }
+
+    public Close(): void
+    {
+        this.portConnection.close();
+        SPSPServer.close();
     }
 
     private Routes(): void
