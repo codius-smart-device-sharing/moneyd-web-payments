@@ -1,5 +1,5 @@
 # Moneyd requires NodeJS 8.9.0 and above
-FROM node:8.11.3
+FROM node:10.15.0
 
 # The working/home directory of our application inside the container
 WORKDIR /
