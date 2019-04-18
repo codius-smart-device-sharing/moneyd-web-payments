@@ -21,7 +21,8 @@ const run = async (callback?: (data: string) => any) =>
     await streamPlugin.connect();
 
     // Set the port manually to expose on docker
-    const port = await getPort();
+    // const port = await getPort();
+    const port = 5000;
     const streamServer = new Server({
         plugin: streamPlugin,
         serverSecret: crypt.randomBytes(32)

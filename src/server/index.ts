@@ -2,6 +2,9 @@ import { app, BrowserWindow } from 'electron';
 import Server from "./Server";
 const path = require('path');
 
+const m = require('moneyd');
+console.log(m);
+
 // Set up the electron app to serve the application
 // Create the app
 

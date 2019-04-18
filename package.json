@@ -6,6 +6,8 @@
   "scripts": {
     "start": "npm run build-dev && node ./distlib/src/index.js",
     "electron": "npm run build-dev && electron distlib/src/server/index.js",
+    "docker-debug": "npm run build && docker-compose build && docker-compose up",
+    "dockerize": "npm run build && docker build -t cbhubb8/ilp-cloud-connector .",
     "build-dev": "npm run copy && tsc -p ./ && webpack --config ./distlib/webpack.config.js --mode development",
     "build": "npm run copy && tsc -p ./",
     "copy": "copyfiles src/**/*.json distlib/",
