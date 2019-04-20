@@ -6,11 +6,13 @@ WORKDIR /
 
 # Add the contents of our current directory into the /app folder of our container
 COPY package.json .
+COPY package-lock.json .
 COPY tsconfig.json .
 COPY /distlib /distlib
 
 # Install dependencies from package.json using npm
 RUN npm install --only=production
+# RUN npm audit fix
 
 # Install global moneyd packages into the docker container
 RUN npm -g config set user root
