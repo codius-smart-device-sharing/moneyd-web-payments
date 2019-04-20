@@ -16,10 +16,10 @@ RUN npm install --only=production
 
 # Install global moneyd packages into the docker container
 RUN npm -g config set user root
-RUN npm install -g moneyd moneyd-uplink-xrp
+RUN npm install -g moneyd moneyd-uplink-xrp ilp-connector
 
 # Link to the global packages
-RUN npm link moneyd moneyd-uplink-xrp
+RUN npm link moneyd moneyd-uplink-xrp ilp-connector
 
 # Make port 8081 available to the outside world -- 5000 as well for the SPSP pointer
 EXPOSE 8081
