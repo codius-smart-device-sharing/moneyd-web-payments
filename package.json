@@ -45,6 +45,7 @@
     "ilp-plugin": "^3.2.1",
     "ilp-plugin-ethereum": "^3.0.0-beta.17",
     "ilp-plugin-xrp-asym-client": "^1.6.0",
+    "ilp-plugin-xrp-paychan-shared": "^4.1.3",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-combine-routers": "^4.0.2",
@@ -62,7 +63,8 @@
     "redux": "^4.0.1",
     "redux-form": "^8.1.0",
     "redux-thunk": "^2.3.0",
-    "ripple-keypairs": "^0.11.0"
+    "ripple-keypairs": "^0.11.0",
+    "ripple-lib": "^1.2.1"
   },
   "devDependencies": {
     "@types/jest-diff": "^20.0.0",

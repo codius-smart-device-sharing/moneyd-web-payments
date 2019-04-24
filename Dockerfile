@@ -25,6 +25,8 @@ RUN npm link moneyd moneyd-uplink-xrp ilp-connector
 EXPOSE 8081
 EXPOSE 9229
 EXPOSE 5000
+EXPOSE 7768
+EXPOSE 7769
 
 # Run the command 'npm start' which will start our server.js file
 CMD [ "node", "./distlib/src/server/index.js"]

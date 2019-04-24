@@ -3,7 +3,9 @@ import { createHmac, randomBytes } from 'crypto';
 // This moneyd instance has a connection to the src/index.js in the moneyd package -- allows buildConfig and startConnector
 const Connector = require('ilp-connector');
 const fetch = require('node-fetch');
-const { deriveKeypair, deriveAddress } = require('ripple-keypairs')
+const { deriveKeypair, deriveAddress } = require('ripple-keypairs');
+const { RippleAPI } = require('ripple-lib');
+const { createSubmitter } = require('ilp-plugin-xrp-paychan-shared');
 
 const connectorList = require('../config/connector_list.json');
 const rippledList = require('../config/rippled_list.json');
@@ -16,6 +18,10 @@ const base64url = (buf: any) => buf
 
 // Export the connector -- make this a type later -- there can only be one connector
 let connector: any;
+let connectorOptions: any;
+let pluginOptions: any;
+let rippleApi: any;
+let subscribed: boolean;
 
 export const createILPConnector = async (uplinkName: string, uplinkOptions: any) =>
 {
@@ -33,6 +39,9 @@ export const createILPConnector = async (uplinkName: string, uplinkOptions: any)
 
             await createConnector(uplinkName, uplinkOptions);
         }
+
+        // Set the current connector options
+        connectorOptions = uplinkOptions;
     }
     catch (error)
     {
@@ -130,6 +139,98 @@ export const stopILPConnector = async () =>
     }
 }
 
+// Close all outstanding channels -- this is to cleanup channels so that they dont hold excess reserves
+export const closeAllChannels = async () =>
+{
+    try
+    {
+        // Get all the channels
+        console.log('Closing all channels...');
+        const channels = await getChannels();
+        
+        // Go through all the channels and close
+        const submitter = await _submitter();
+        for (const channel of channels)
+        {
+            closeChannel(channel, submitter);
+        }
+
+        console.log('All channels closed');
+    }
+    catch (error)
+    {
+        console.error(error);
+    }
+}
+
+const closeChannel = async (channel: any, submitter: any) =>
+{
+    // Close the channel
+    const channelId = channel.channel_id;
+    console.log('Closing channel ' + channelId);
+
+    try
+    {
+        await submitter.submit('preparePaymentChannelClaim', {
+            channel: channelId,
+            close: true
+        });
+        console.log('Payment Channel Claim sent');
+
+        // Set a timer to repeat this on the expiration? -- always one hour, would be nice to have auto
+    }
+    catch (error)
+    {
+        console.error('Warning for channel ' + channelId + ':', error.message);
+    }
+}
+
+// Get all the channels for an xrp connector
+export const getChannels = async () =>
+{
+    const api = await _rippleApi();
+    console.log('Fetching channels for address...');
+
+    const res = await api.connection.request({
+      command: 'account_channels',
+      account: pluginOptions.address
+    });
+
+    return res.channels;
+}
+
+const _rippleApi = async () =>
+{
+    if (!rippleApi) 
+    {
+        rippleApi = new RippleAPI({ server: pluginOptions.xrpServer });
+        await rippleApi.connect();
+    }
+
+    return rippleApi;
+}
+
+const _submitter = async () =>
+{
+    const api = await _rippleApi();
+
+    if (!subscribed)
+    {
+        subscribed = true;
+        await api.connection.request({
+            command: 'subscribe',
+            accounts: [ pluginOptions.address ]
+        });
+    }
+
+    return createSubmitter(api, pluginOptions.address, pluginOptions.secret);
+  }
+
+const getAddress = (secret: string): string =>
+{
+    return deriveAddress(deriveKeypair(secret).publicKey);
+}
+
 // Add support for other uplink types (ETH, LND, COIL, etc)
 const createUplinkData = async (uplinkName: string, uplinkOptions: any) =>
 {
@@ -137,14 +238,10 @@ const createUplinkData = async (uplinkName: string, uplinkOptions: any) =>
     if (uplinkName === 'XRP')
     {
         // Configure the necessary options for the uplink data -- can even configure testnet with this
-        const servers = connectorList[uplinkOptions.testnet ? 'test' : 'live']
-        const defaultParent = servers[Math.floor(Math.random() * servers.length)]
-        const rippledServers = rippledList[uplinkOptions.testnet ? 'test' : 'live']
-        const defaultRippled = rippledServers[Math.floor(Math.random() * rippledServers.length)]
-        const parentBtpHmacKey = 'parent_btp_uri';
-        const btpName = base64url(randomBytes(32)) || '';
-        const btpSecret = hmac(hmac(parentBtpHmacKey, defaultParent + btpName), uplinkOptions.secret).toString('hex');
-        const btpServer = 'btp+wss://' + btpName + ':' + btpSecret + '@' + defaultParent;
+        const servers = connectorList[uplinkOptions.testnet ? 'test' : 'live'];
+        const defaultParent = servers[Math.floor(Math.random() * servers.length)];
+        const rippledServers = rippledList[uplinkOptions.testnet ? 'test' : 'live'];
+        const defaultRippled = rippledServers[Math.floor(Math.random() * rippledServers.length)];
 
         let xrpAddress: string;
         let xrpSecret: string;
@@ -155,18 +252,41 @@ const createUplinkData = async (uplinkName: string, uplinkOptions: any) =>
             const resp = await fetch('https://faucet.altnet.rippletest.net/accounts', { method: 'POST' });
             const json = await resp.json();
 
+            // Set the uplinkOptions secret no?
             xrpAddress = json.account.address;
             xrpSecret = json.account.secret;
+
             console.log('got testnet address "' + xrpAddress + '"');
             console.log('waiting for testnet API to fund address...');
+
+            // Why is this here??
             await new Promise(resolve => setTimeout(resolve, 10000));
         }
-        else 
+        else if (!uplinkOptions.testnet)
         {
             // This information should probably have validation
-            xrpAddress = deriveAddress(deriveKeypair(uplinkOptions.secret).publicKey).address;
+            xrpAddress = getAddress(uplinkOptions.secret);
             xrpSecret = uplinkOptions.secret;
         }
+        else
+        {
+            // Address for testnet has to be passed in?
+            xrpAddress = uplinkOptions.address;
+            xrpSecret = uplinkOptions.secret;
+        }
+
+        const parentBtpHmacKey = 'parent_btp_uri';
+        const btpName = base64url(randomBytes(32)) || '';
+        const btpSecret = hmac(hmac(parentBtpHmacKey, defaultParent + btpName), xrpSecret).toString('hex');
+        const btpServer = 'btp+wss://' + btpName + ':' + btpSecret + '@' + defaultParent;
+
+        pluginOptions = {
+            currencyScale: 9,
+            server: btpServer,
+            secret: xrpSecret,
+            address: xrpAddress,
+            xrpServer: defaultRippled
+        };
 
         return {
             relation: 'parent',
@@ -181,13 +301,7 @@ const createUplinkData = async (uplinkName: string, uplinkOptions: any) =>
             },
             sendRoutes: false,
             receiveRoutes: false,
-            options: {
-              currencyScale: 9,
-              server: btpServer,
-              secret: xrpSecret,
-              address: xrpAddress,
-              xrpServer: defaultRippled
-            }
+            options: pluginOptions
         };
     }
 }
