@@ -21,11 +21,18 @@ let connector: any;
 let pluginOptions: any;
 let rippleApi: any;
 let subscribed: boolean;
+let ledgerSynced: boolean;
+
+// Constants
+const EXPIRE_TIME: number = 1000 * 60 * 60;
+const SYNC_TIME: number = 1000 * 5;
 
 export const createILPConnector = async (uplinkName: string, uplinkOptions: any) =>
 {
     try
     {
+        ledgerSynced = false;
+
         if (!connector)
         {
             await createConnector(uplinkName, uplinkOptions);
@@ -94,12 +101,26 @@ export const startILPConnector = async () =>
     {
         if (connector)
         {
+            // List ledger as unsynced during the start -- should take a brief sync
+            ledgerSynced = false;
+
             console.log('Starting the connector...');
 
             // Listen with the connector -- this essentially starts the service
             await connector.listen();
 
             console.log('Connector started...');
+
+            // Set the timeout that allows the channels to be closed -- return channels?
+            // Only 'Started' connector after syncing
+            await new Promise((resolve) =>
+            {
+                setTimeout(() =>
+                {
+                    ledgerSynced = true;
+                    resolve();
+                }, SYNC_TIME);
+            });
         }
         else
         {
@@ -122,11 +143,22 @@ export const stopILPConnector = async () =>
 {
     try
     {
-        console.log('Stopping the ILP connector...');
+        if (ledgerSynced)
+        {
+            console.log('Stopping the ILP connector...');
 
-        await connector.shutdown();
+            // Shutdown the top level connector
+            await connector.shutdown();
 
-        console.log('Connector stopped...');
+            // Remove all the channels
+            await closeAllChannels();
+
+            console.log('Connector stopped...');
+        }
+        else
+        {
+            console.error('Ledger not synced, cannot stop connector');
+        }
     }
     catch (error)
     {
@@ -140,18 +172,25 @@ export const closeAllChannels = async () =>
 {
     try
     {
-        // Get all the channels
-        console.log('Closing all channels...');
-        const channels = await getChannels();
-        
-        // Go through all the channels and close
-        const submitter = await _submitter();
-        for (const channel of channels)
+        if (ledgerSynced)
         {
-            closeChannel(channel, submitter);
-        }
+            // Get all the channels
+            console.log('Closing all channels...');
+            const channels = await getChannels();
+            
+            // Go through all the channels and close
+            const submitter = await _submitter();
+            for (const channel of channels)
+            {
+                await closeChannel(channel, submitter);
+            }
 
-        console.log('All channels closed');
+            console.log('All channels closed');
+        }
+        else
+        {
+            console.error('Ledger not synced, cannot close channels');
+        }
     }
     catch (error)
     {
@@ -171,11 +210,15 @@ const closeChannel = async (channel: any, submitter: any) =>
             channel: channelId,
             close: true
         });
-        console.log('Payment Channel Claim sent');
 
-        // Set a timer to repeat this on the expiration? -- always one hour, would be nice to have auto
+        console.log('Payment Channel Claim complete');
 
-        // Having an issue with the ledger_index, LedgerSequence and ledger history -- erroring out consistently
+        // Set a timer to close the channel on the hour -- how should this be handled? Cant block for 1 hr
+        // Just wait? -- Even a new configure or shutdown should be fine as long as this closeChannel runs correctly at 1 hr
+        setTimeout(async () =>
+        {
+            await closeChannel(channel, submitter);
+        }, EXPIRE_TIME);
     }
     catch (error)
     {

@@ -1,11 +1,9 @@
 import * as Koa from "koa";
 import * as combineRouters from "koa-combine-routers";
-import { WebPaymentRouter } from "./routers";
+import { WebPaymentRouter, ConnectorRouter } from "./routers";
 import * as CORS from "@koa/cors";
 import { SPSPServer } from "./SPSPServer";
-
-let path: any = require("path");
-let bodyParser: any = require('koa-bodyparser');
+import * as bodyParser from 'koa-bodyparser';
 
 // Set the port to listen on -- may want to make this more customizable
 const PORT: number = 8081;
@@ -53,10 +51,23 @@ export default class Server
 
     private Routes(): void
     {
-        // Attach all the routers
-        const combinedRouter = combineRouters(
-            new WebPaymentRouter("This is the router for local payments information").router
-        );
+        // Attach all the routers -- make this consistent for command line as well
+        let combinedRouter;
+
+        // Only add the connector router in docker env
+        if (process.env.DOCKER)
+        {
+            combinedRouter = combineRouters(
+                new WebPaymentRouter("This is the router for local payments information").router,
+                new ConnectorRouter('This is the router for the built in connector', '/connector').router
+            );
+        }
+        else
+        {
+            combinedRouter = combineRouters(
+                new WebPaymentRouter("This is the router for local payments information").router
+            );
+        }
         
         // Use the router middleware -- combine all the routers
         this.app.use(CORS());
