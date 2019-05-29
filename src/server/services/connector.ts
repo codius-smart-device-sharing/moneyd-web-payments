@@ -18,7 +18,6 @@ const base64url = (buf: any) => buf
 
 // Export the connector -- make this a type later -- there can only be one connector
 let connector: any;
-let connectorOptions: any;
 let pluginOptions: any;
 let rippleApi: any;
 let subscribed: boolean;
@@ -39,9 +38,6 @@ export const createILPConnector = async (uplinkName: string, uplinkOptions: any)
 
             await createConnector(uplinkName, uplinkOptions);
         }
-
-        // Set the current connector options
-        connectorOptions = uplinkOptions;
     }
     catch (error)
     {
@@ -178,10 +174,12 @@ const closeChannel = async (channel: any, submitter: any) =>
         console.log('Payment Channel Claim sent');
 
         // Set a timer to repeat this on the expiration? -- always one hour, would be nice to have auto
+
+        // Having an issue with the ledger_index, LedgerSequence and ledger history -- erroring out consistently
     }
     catch (error)
     {
-        console.error('Warning for channel ' + channelId + ':', error.message);
+        console.error('Warning for channel ' + channelId + ': ', error.message);
     }
 }
 
