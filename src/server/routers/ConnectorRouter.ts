@@ -1,6 +1,6 @@
 // Import base route class
 import { CustomRouter } from "./CustomRouter";
-import { startILPConnector, stopILPConnector } from "../services";
+import { startILPConnector, stopILPConnector, closeAllChannels } from "../services";
 
 export class ConnectorRouter extends CustomRouter
 {
@@ -26,6 +26,9 @@ export class ConnectorRouter extends CustomRouter
             catch (error)
             {
                 console.error(error.toString());
+
+                // Close the channels on error
+                await closeAllChannels();
             }
         });
 

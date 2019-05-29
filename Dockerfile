@@ -29,4 +29,4 @@ EXPOSE 7768
 EXPOSE 7769
 
 # Run the command 'npm start' which will start our server.js file
-CMD [ "node", "./distlib/src/server/index.js"]
+CMD [ "node", "./distlib/src/server/docker.index.js"]

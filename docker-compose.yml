@@ -10,4 +10,4 @@ services:
     command:
       - node
       - "--inspect-brk=0.0.0.0"
-      - "./distlib/src/server/index.js" 
+      - "./distlib/src/server/docker.index.js" 

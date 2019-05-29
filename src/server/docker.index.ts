@@ -13,7 +13,6 @@ if (process.env.DOCKER && process.argv.length === 4)
         secret: secret
     };
 
-    // Create ILP connector in env
     try
     {
         // Hate .then but dont want to extract to async function
