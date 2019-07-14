@@ -21,7 +21,7 @@ export class ConnectorRouter extends CustomRouter
             {
                 await startILPConnector();
 
-                // What to return?
+                // What to return? -- probably just success or failure
             }
             catch (error)
             {

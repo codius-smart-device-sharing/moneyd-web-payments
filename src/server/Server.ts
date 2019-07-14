@@ -5,6 +5,8 @@ import * as CORS from "@koa/cors";
 import { SPSPServer } from "./SPSPServer";
 import * as bodyParser from 'koa-bodyparser';
 
+const isDocker = require('is-docker');
+
 // Set the port to listen on -- may want to make this more customizable
 const PORT: number = 8081;
 
@@ -55,7 +57,7 @@ export default class Server
         let combinedRouter;
 
         // Only add the connector router in docker env
-        if (process.env.DOCKER)
+        if (isDocker())
         {
             combinedRouter = combineRouters(
                 new WebPaymentRouter("This is the router for local payments information").router,
