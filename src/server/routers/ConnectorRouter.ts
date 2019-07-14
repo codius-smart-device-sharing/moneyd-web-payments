@@ -1,6 +1,6 @@
 // Import base route class
 import { CustomRouter } from "./CustomRouter";
-import { startILPConnector, stopILPConnector, closeAllChannels } from "../services";
+import { startILPConnector, stopILPConnector, closeAllChannels, getILPConnectorInfo } from "../services";
 
 export class ConnectorRouter extends CustomRouter
 {
@@ -43,6 +43,20 @@ export class ConnectorRouter extends CustomRouter
             catch (error)
             {
                 console.error(error.toString());
+            }
+        });
+
+        this.router.get('/info', async (ctx: any, next: Function): Promise<any> =>
+        {
+            try
+            {
+                // Get the information about this connector -- uplinkName and testnet or not?
+                ctx.body = getILPConnectorInfo();
+            }
+            catch (error)
+            {
+                console.error(error.toString());
+                ctx.status = 404;
             }
         });
     }

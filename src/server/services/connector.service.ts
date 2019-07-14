@@ -23,9 +23,27 @@ let rippleApi: any;
 let subscribed: boolean;
 let ledgerSynced: boolean;
 
+let uplinkType: string;
+let testnet: boolean;
+
 // Constants
 const EXPIRE_TIME: number = 1000 * 60 * 60;
 const SYNC_TIME: number = 1000 * 5;
+
+export const getILPConnectorInfo = () =>
+{
+    if (!connector)
+    {
+        return undefined;
+    }
+    else
+    {
+        return {
+            uplinkType,
+            testnet: pluginOptions.testnet
+        }
+    }
+}
 
 export const createILPConnector = async (uplinkName: string, uplinkOptions: any) =>
 {
@@ -45,6 +63,9 @@ export const createILPConnector = async (uplinkName: string, uplinkOptions: any)
 
             await createConnector(uplinkName, uplinkOptions);
         }
+
+        uplinkType = uplinkName;
+        testnet = uplinkOptions.testnet;
     }
     catch (error)
     {
@@ -233,8 +254,8 @@ export const getChannels = async () =>
     console.log('Fetching channels for address...');
 
     const res = await api.connection.request({
-      command: 'account_channels',
-      account: pluginOptions.address
+        command: 'account_channels',
+        account: pluginOptions.address
     });
 
     return res.channels;
