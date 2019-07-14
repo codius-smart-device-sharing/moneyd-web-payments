@@ -18,7 +18,7 @@ if (isDocker() && process.argv.length === 5)
     try
     {
         // Create the connector on the server startup -- has to have the options
-        createILPConnector(uplinkName, uplinkOptions).catch(() => closeAllChannels());
+        createILPConnector(uplinkName, uplinkOptions);
     }
     catch (error)
     {
