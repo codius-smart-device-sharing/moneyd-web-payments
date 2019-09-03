@@ -4,11 +4,13 @@ import * as parseArgs from 'minimist';
 
 const isDocker = require('is-docker');
 
-// Check for and create connector if in env and appropriate arguments -- should have 5?
-if (isDocker() && process.argv.length === 5)
+// Check for and create connector if in env and appropriate arguments -- should have 5 but could have 8 if names are args
+if (isDocker() && (process.argv.length === 8 || process.argv.length === 5))
 {
     // Extract args
     const { uplinkName, testnet, secret } = parseArgs(process.argv.slice(2));
+    console.log('Connector name: ' + uplinkName);
+    console.log('Connector mode: ' + testnet === 'false' ? 'LiveNet' : 'TestNet');
 
     const uplinkOptions: any = {
         testnet: testnet === 'true',
@@ -27,4 +29,4 @@ if (isDocker() && process.argv.length === 5)
 }
 
 // Create the server for the app
-const server: Server = new Server();
+new Server();

@@ -50,6 +50,8 @@ export class ConnectorRouter extends CustomRouter
         {
             try
             {
+                console.log(ctx);
+                console.log('here');
                 // Get the information about this connector -- uplinkName and testnet or not?
                 ctx.body = getILPConnectorInfo();
             }
