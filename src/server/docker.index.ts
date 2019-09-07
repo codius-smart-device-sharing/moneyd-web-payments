@@ -1,5 +1,6 @@
-import Server from "./Server";
+import Server from "./servers/Server";
 import { createILPConnector, closeAllChannels } from './services';
+import { UplinkOptions } from './models';
 import * as parseArgs from 'minimist';
 
 const isDocker = require('is-docker');
@@ -10,11 +11,16 @@ if (isDocker() && (process.argv.length === 8 || process.argv.length === 5))
     // Extract args
     const { uplinkName, testnet, secret } = parseArgs(process.argv.slice(2));
     console.log('Connector name: ' + uplinkName);
-    console.log('Connector mode: ' + testnet === 'false' ? 'LiveNet' : 'TestNet');
+    console.log('Connector mode: ' + (testnet === 'false' ? 'LiveNet' : 'TestNet'));
 
-    const uplinkOptions: any = {
+    const uplinkOptions: UplinkOptions = {
         testnet: testnet === 'true',
-        secret: secret
+        secret: secret,
+        connectorPort: 7768,
+        adminApiPort: 7769,
+        allowedOrigins: [
+            'chrome-extension://fakjpmebfmpdbhpnddiokemempckoejk'
+        ]
     };
 
     try
@@ -29,4 +35,4 @@ if (isDocker() && (process.argv.length === 8 || process.argv.length === 5))
 }
 
 // Create the server for the app
-new Server();
+const server: Server = new Server();

@@ -7,7 +7,15 @@ services:
       - "8081:8081" 
       - "9229:9229"
       - "5000:5000"
+      - "7768:7768"
+      - "7769:7769"
     command:
       - node
       - "--inspect-brk=0.0.0.0"
       - "./distlib/src/server/docker.index.js" 
+      - "--uplinkName"
+      - "XRP"
+      - "--testnet"
+      - "false"
+      - "--secret"
+      - "sEd7ZiAH3iLqbKwc1SJereMP49k8aCA"

@@ -8,7 +8,7 @@ const app = new Koa();
 import * as crypt from 'crypto';
 
 // This creates a random SPSP pointer
-const name = crypt.randomBytes(8).toString('hex');
+const name: string = crypt.randomBytes(8).toString('hex');
 const paymentPointer: string = '$' + name + '.localtunnel.me';
 
 let portConnection: any;
@@ -22,7 +22,7 @@ const run = async (callback?: (data: string) => any) =>
 
     // Set the port manually to expose on docker
     // const port = await getPort();
-    const port = 5000;
+    const port: number = 5000;
     const streamServer = new Server({
         plugin: streamPlugin,
         serverSecret: crypt.randomBytes(32)

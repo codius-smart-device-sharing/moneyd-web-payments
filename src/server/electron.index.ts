@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import Server from "./Server";
+import Server from "./servers/Server";
 const path = require('path');
 
 // Set up the electron app to serve the application

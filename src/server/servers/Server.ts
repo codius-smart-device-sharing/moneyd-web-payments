@@ -1,6 +1,6 @@
 import * as Koa from "koa";
 import * as combineRouters from "koa-combine-routers";
-import { WebPaymentRouter, ConnectorRouter } from "./routers";
+import { WebPaymentRouter, ConnectorRouter } from "../routers";
 import * as CORS from "@koa/cors";
 import { SPSPServer } from "./SPSPServer";
 import * as bodyParser from 'koa-bodyparser';

@@ -2,8 +2,9 @@
 import { CustomRouter } from "./CustomRouter";
 
 // Set up the ilp configs
-import { ILDCP, SPSP, createPlugin } from 'ilp/src';
-import { SPSPServer } from "../SPSPServer";
+import { ILDCP, SPSP, createPlugin, Receipt } from 'ilp/src';
+import { PluginV2 } from "ilp/src/lib/plugin";
+import { SPSPServer } from "../servers/SPSPServer";
 
 export class WebPaymentRouter extends CustomRouter
 {
@@ -20,7 +21,7 @@ export class WebPaymentRouter extends CustomRouter
         {
             try
             {
-                const plugin: any = createPlugin();
+                const plugin: PluginV2 = createPlugin();
                 await plugin.connect();
                 const { assetCode, assetScale } = await ILDCP.fetch(plugin.sendData.bind(plugin));
 
@@ -45,7 +46,7 @@ export class WebPaymentRouter extends CustomRouter
       
             try 
             {
-                const result = await SPSP.pay(createPlugin(), {
+                const result: Receipt = await SPSP.pay(createPlugin(), {
                     receiver,
                     sourceAmount: amount,
                     data: orderHash
@@ -76,7 +77,7 @@ export class WebPaymentRouter extends CustomRouter
             // retrieved from the distlib on this local port -- dont store in s3 (full app doesnt need to know about your Payment method)
             try
             {
-                const plugin: any = createPlugin();
+                const plugin: PluginV2 = createPlugin();
                 await plugin.connect();
 
                 // This worked -- return success

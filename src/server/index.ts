@@ -1,4 +1,4 @@
-import Server from "./Server";
+import Server from "./servers/Server";
 
 // Create the app
 const server: Server = new Server();
