@@ -61,7 +61,7 @@ typings/
 .next
 
 # package-lock.json
-package-lock.json
+# package-lock.json
 
 # Ignore IDEA and serverless cache files
 .idea
