@@ -18,4 +18,4 @@ services:
       - "--testnet"
       - "false"
       - "--secret"
-      - "sEd7ZiAH3iLqbKwc1SJereMP49k8aCA"
+      - ""
