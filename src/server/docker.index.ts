@@ -4,6 +4,7 @@ import { UplinkOptions } from './models';
 import * as parseArgs from 'minimist';
 
 const isDocker = require('is-docker');
+const { CONNECTOR_PORT, ADMIN_API_PORT } = require('./config/uplink.json');
 
 // Check for and create connector if in env and appropriate arguments -- should have 5 but could have 8 if names are args
 if (isDocker() && (process.argv.length === 8 || process.argv.length === 5))
@@ -16,8 +17,8 @@ if (isDocker() && (process.argv.length === 8 || process.argv.length === 5))
     const uplinkOptions: UplinkOptions = {
         testnet: testnet === 'true',
         secret: secret,
-        connectorPort: 7768,
-        adminApiPort: 7769,
+        connectorPort: CONNECTOR_PORT,
+        adminApiPort: ADMIN_API_PORT,
         allowedOrigins: [
             'chrome-extension://fakjpmebfmpdbhpnddiokemempckoejk'
         ]
